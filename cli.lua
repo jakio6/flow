@@ -1,74 +1,133 @@
 #!/usr/bin/env lua
-local pse = require "pse"
-pse:load()
+local flow = require "flow"
+flow:load()
+
 
 local m = {
 	['add'] = function (_,args)
 		local s = table.concat(args,' ')
-		pse:add(s)
+		flow:add(s)
 	end,
+
+	['c'] = function(self,...) self:comment(...) end,
 	['comment'] = function (_,args)
 		if #args > 1 then
 			local i = tonumber(args[1])
-			local u = pse:getidx(i)
+			local u = flow:getindex(i)
 			local s = table.concat({table.unpack(args,2)},' ')
-			pse:comment(u, s)
+			flow:rep(u, s)
 		end
 	end,
+
+	-- folder
+	['mv'] = function(self,...) self:archive(...) end,
+	['rm'] = function(self,...) self:archive(...) end,
 	['archive'] = function (_,args)
 		if #args > 0 then
 			local idx = tonumber(args[1])
-			local u = pse:getidx(idx)
+			local u = flow:getindex(idx)
 			if u then
-				pse:archive(u)
+				flow:folder(u, args[2] or "archive")
 			end
 		end
 	end,
+
+	-- tag
 	['tag'] = function (_,args)
 		if #args > 0 then
 			local idx = tonumber(args[1])
-			local u = pse:getidx(idx)
+			local u = flow:getindex(idx)
 			local tag = table.concat({table.unpack(args,2)}," ")
 			if u then
-				pse:tag(u, tag)
+				flow:tag(u, tag)
 			end
 			return
 		end
 	end,
+
+	['untag'] = function (_,args)
+		if #args > 1 then
+			local idx = tonumber(args[1])
+			local u = flow:getindex(idx)
+			local tag = args[2]
+			if u then
+				flow:untag(u,tag)
+			end
+		end
+	end,
+
+	-- list tag
+	['lt'] = function (self,...) self:listag(...) end,
 	['listag'] = function (_,args)
 		if #args > 0 then
 			for _,val in ipairs(args) do
-				local l = pse:getag(val)
-				pse.struc.index = {}
+				local l = flow:gett(val)
+				flow:clear_index()
 				for _,u in ipairs(l) do
-					pse:list(u,0)
+					flow:list(u,0)
 				end
 			end
 			return
 		end
-		for k,v in pairs(pse.struc.tag) do
-			print(k .. '  \x1b[2m' .. #v .. ' items' .. '\x1b[0m')
-		end
+		flow:listag()
 	end,
-	['list'] = function (_,args)
-		if #args > 0 then
+
+	-- list
+	['l'] = function(self,...) self:list(...) end,
+	['list'] = function (self,args)
+		if #args > 0 then -- has arg
 			local idx = tonumber(args[1])
-			local u = pse:getidx(idx)
-			pse.struc.index = {}
+			local u = flow:getindex(idx)
+			flow:clear_index()
 			if u then
-				pse:list(u,0)
+				flow:list(u,0)
 			end
 			return
 		end
-		pse.struc.index = {}
-		for _,v in ipairs(pse.struc.root) do
-			pse:list(v,0)
+
+		self:listfolder{"root"}
+	end,
+
+	-- list folder
+	['lf'] = function (self,...) self:listfolder(...) end,
+	['listfolder'] = function (_,args)
+		if #args > 0 then
+			for _,v in ipairs(args) do
+				local l = flow:getf(v)
+				flow:clear_index()
+				for _,u in ipairs(l) do
+					flow:list(u,0)
+				end
+			end
+			return
 		end
+
+		flow:listfolder()
+	end,
+
+	['todo'] = function (self, _) self:listfolder{"todo"} end,
+
+	['help'] = function ()
+		print [[
+		add -- add
+		l|list [idx] -- list
+		c|comment idx ... -- comment to
+		lf|listfolder [idx]
+		lt|listag [idx]
+		tag [idx] ...
+		untag [idx] ...
+		mv|rm|archive [idx folder] -- move to folder , or archive
+		]]
 	end
 }
 
 local f = m[arg[1]]
 if f then
 	f(m,{table.unpack(arg,2)})
+elseif arg[1] then
+	print("unknow option:",arg[1])
+	m:help{}
+else
+	m:list{}
 end
-pse:save()
+flow:save()
