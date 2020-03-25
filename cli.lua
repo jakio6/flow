@@ -15,6 +15,15 @@ local m = {
 			pse:comment(u, s)
 		end
 	end,
+	['archive'] = function (_,args)
+		if #args > 0 then
+			local idx = tonumber(args[1])
+			local u = pse:getidx(idx)
+			if u then
+				pse:archive(u)
+			end
+		end
+	end,
 	['tag'] = function (_,args)
 		if #args > 0 then
 			local idx = tonumber(args[1])

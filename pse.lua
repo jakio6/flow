@@ -49,8 +49,11 @@ local m = {
 		return true
 	end,
 	list = function (self,u,depth) -- filter, displaying
+		if not self.struc.m[u] then
+			return
+		end
 		table.insert(self.struc.index, u)
-			io.write(string.format('%s%d. %s \x1b[2m%s\x1b[1m%s\x1b[0m\n',
+		io.write(string.format('%s%d. %s \x1b[2m%s\x1b[1m%s\x1b[0m\n',
 			string.rep("  ", depth), #self.struc.index, self.struc.m[u].c,
 			os.date("%H:%M %m-%d",self.struc.m[u].t),
 			table.concat(self.struc.m[u].tags or {},',')))
