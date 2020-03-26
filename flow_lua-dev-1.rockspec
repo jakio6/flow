@@ -1,7 +1,7 @@
 package = "flow_lua"
 version = "dev-1"
 source = {
-   url = "git+file:///home/jakio6/git/flow_lua"
+   url = "git+ssh://git@github.com/jakio6/flow.git"
 }
 description = {
    homepage = "*** please enter a project homepage ***",
@@ -10,12 +10,12 @@ description = {
 build = {
    type = "builtin",
    modules = {
-      --cli = "cli.lua",
-      flow = "flow.lua",
+      cli = "cli.lua",
+      flow = "flow.lua"
    },
-   install = {
-	bin = {
-		"f"
-	}
-   }
+   --install = {
+	   --bin = {
+		   --f = "cli.lua"
+	   --}
+   --}
 }
