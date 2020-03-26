@@ -1,0 +1,4 @@
+- [] sorting items
+- [] listing depth
+- [] config file
+- [] mobile client

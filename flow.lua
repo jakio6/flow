@@ -23,6 +23,7 @@ local function find(t, val)
 	return nil
 end
 
+
 function flow:geti(u)
 	if not u then return self.m.im end
 	return self.m.im[u]
@@ -121,7 +122,7 @@ function flow:rep(r,s)
 	local t = os.time()
 
 	-- FIXME
-	self.m.im[u] = {
+	self:geti()[u] = {
 		u = u,
 		t = t,
 		r = r,
@@ -175,12 +176,11 @@ function flow:listfolder()
 	end
 end
 
-function flow:save()
-	local f = io.open("test.json", "w")
-	f:write(cjson.encode(self.m))
+function flow:dump()
+	return cjson.encode(self.m)
 end
 
-function flow:load()
+function flow:load(s)
 	local t = {
 		fm = {},
 		tm = {},
@@ -188,11 +188,8 @@ function flow:load()
 		index = {}
 	}
 
-	local f,err = io.open("test.json", "r")
-	if not f then
-		print(err)
-	else
-		t = cjson.decode(f:read('a'))
+	if s then
+		t = cjson.decode(s)
 	end
 	self.m = t
 end
