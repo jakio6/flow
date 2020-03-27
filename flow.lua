@@ -56,6 +56,7 @@ function flow:getindex(i)
 end
 function flow:clear_index() self.m.index = {} end
 
+-- 文件夹
 function flow:folder(u,s)
 	local it = self:geti(u)
 	local f = self:getf(s)
@@ -67,6 +68,7 @@ function flow:folder(u,s)
 	table.insert(f, u)
 end
 
+-- unfolder
 function flow:unfolder(r)
 	local it = self:geti(r)
 	assert(it)
@@ -87,6 +89,7 @@ function flow:unfolder(r)
 	end
 end
 
+-- tag
 function flow:tag(u,s)
 	local it = self:geti(u)
 	local t = self:gett(s)
@@ -100,7 +103,7 @@ function flow:tag(u,s)
 	table.insert(t,u)
 end
 
-
+-- untag
 function flow:untag(r, s)
 	local it = self:geti(r)
 	local i = find(it['tags'],s)
@@ -117,6 +120,7 @@ function flow:untag(r, s)
 	end
 end
 
+-- reply
 function flow:rep(r,s)
 	local u = uuid()
 	local t = os.time()
@@ -150,7 +154,7 @@ function flow:list(u,depth)
 	assert(self:geti(u))
 
 	table.insert(self:getindex(), u)
-	io.write(string.format('%s%d. %s \x1b[2m%s\x1b[0m\x1b[1m%s\x1b[0m\n',
+	io.write(string.format('%s%d. %s \027[2m%s\027[0m\027[1m%s\027[0m\n',
 	string.rep("  ", depth), #self:getindex(), self:geti(u).c,
 	os.date("%H:%M %m-%d",self:geti(u).t),
 	table.concat(self:geti(u).tags or {},',')))
@@ -166,13 +170,13 @@ end
 
 function flow:listag()
 		for k,v in pairs(self:gett()) do
-			print(k .. '  \x1b[2m' .. #v .. ' items' .. '\x1b[0m')
+			print(k .. '  \027[2m' .. #v .. ' items' .. '\027[0m')
 		end
 end
 
 function flow:listfolder()
 	for k,v in pairs(self:getf()) do
-			print(k .. '  \x1b[2m' .. #v .. ' items' .. '\x1b[0m')
+			print(k .. '  \027[2m' .. #v .. ' items' .. '\027[0m')
 	end
 end
 

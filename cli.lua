@@ -2,7 +2,8 @@
 local flow = require "flow"
 local lfs = require "lfs"
 
-local home = os.getenv("HOME")
+--local home = os.getenv("HOME")
+local home = "."
 local dir = home .. '/' .. ".flow"
 
 local function die(msg)
@@ -27,7 +28,7 @@ do -- load
 	if not f then
 		io.stderr:write(err)
 	else
-		aa = f:read('a')
+		aa = f:read('*a')
 	end
 
 	flow:load(aa)
@@ -155,7 +156,7 @@ local m = {
 do -- operating
 	local f = m[arg[1]]
 	if f then
-		f(m,{table.unpack(arg,2)})
+		f(m,{unpack(arg,2)})
 	elseif arg[1] then
 		print("unknow option:",arg[1])
 		m:help{}
